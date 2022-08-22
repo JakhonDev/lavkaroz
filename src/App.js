@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect } from 'react'
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import Header from './components/Header'
+import Main from './components/Main'
+import { UserContext } from './context/userContext'
+import { loginRoute } from './utils/routes'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const { user } = useContext(UserContext)
+    const location = useLocation()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!user && location.pathname === '/') {
+            navigate('/login')
+        }
+    }, [location])
+    return (
+        <>
+            <Header />
+
+            {user ? (
+                <Main />
+            ) : (
+                <Routes>
+                    {loginRoute.map((route) => {
+                        return (
+                            <Route
+                                key={route.id}
+                                path={route.path}
+                                element={route.component}
+                            />
+                        )
+                    })}
+                </Routes>
+            )}
+        </>
+    )
 }
 
-export default App;
+export default App
